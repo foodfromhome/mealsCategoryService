@@ -3,10 +3,10 @@ from api.admin.admin_main.api import router as admin_main_router
 from fastapi import APIRouter
 
 
-router = APIRouter(
-    prefix="/api/v1",
+admin_router = APIRouter(
+    tags=['Страница повара']
 )
 
 
-router.include_router(add_meals_router)
-router.include_router(admin_main_router)
+admin_router.include_router(add_meals_router)
+admin_router.include_router(admin_main_router)
