@@ -31,7 +31,7 @@ async def add_meals(user_id: int,
                      price=price,
                      ingredient=ingredient,
                      category=category,
-                     chefs_id=user_id)
+                     user_id=user_id)
 
         await meal.save()
 
