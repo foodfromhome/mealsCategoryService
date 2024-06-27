@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import UploadFile
 import uuid
 from beanie import PydanticObjectId
+from config import settings
 
 
 class S3Client:
@@ -34,3 +35,11 @@ class S3Client:
             await s3_client.put_object(Body=file_content, Bucket=self.bucket_name, Key=file_name)
 
             return f"https://{self.bucket_name}.s3.msk.3hcloud.com/{file_name}"
+
+
+s3_client = S3Client(
+    access_key=settings.s3_access_key,
+    secret_key=settings.s3_secret_key,
+    bucket_name=settings.s3_bucket_name,
+    endpoint_url=settings.s3_endpoint_url
+)

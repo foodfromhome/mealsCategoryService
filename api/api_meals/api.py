@@ -1,13 +1,19 @@
+import logging
 from typing import List
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from starlette import status
 from starlette.responses import JSONResponse
 from api.api_meals.models import Meals, MealCategory
-from api.api_meals.config import s3_client
 from api.api_meals.schemas import MealsSchemas
 from beanie import PydanticObjectId
+from fastapi_cache.decorator import cache
+
+
+from api.s3.main import s3_client
 
 router = APIRouter()
+
+logger = logging.getLogger(__name__)
 
 
 @router.post("/{user_id}/meals", status_code=status.HTTP_201_CREATED, summary="Добавление блюд",
@@ -46,7 +52,9 @@ async def add_meals(user_id: int,
 
 @router.get("/meals/{meals_id}", status_code=status.HTTP_200_OK,
             summary="Возвращает блюдо по id", response_model=MealsSchemas)
-async def get_meals_for_id(chefs_id: int, meals_id: PydanticObjectId):
+@cache(expire=120)
+async def get_meals_for_id(meals_id: PydanticObjectId):
+    logger.info(f"Fetching meal {meals_id} from cache or database")
     try:
 
         meals = await Meals.get(meals_id)
@@ -115,7 +123,9 @@ async def delete_meals_for_id(meals_id: PydanticObjectId):
 
 @router.get("/meals", status_code=status.HTTP_200_OK, summary="Возвращает все блюда",
             response_model=List[MealsSchemas])
+@cache(expire=120)
 async def get_all_meals():
+    logger.info("Fetching all meals from cache or database")
     try:
 
         meals = await Meals.find().to_list()
