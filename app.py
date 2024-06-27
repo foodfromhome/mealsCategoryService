@@ -9,6 +9,8 @@ from api.main_routers import mainRouter
 from api.models_init import Meals
 from redis import asyncio as aioredis
 
+from config import settings
+
 
 async def startup():
     await init_beanie(
@@ -17,7 +19,9 @@ async def startup():
             Meals,
         ]
     )
-    redis = aioredis.from_url("redis://localhost", encoding="utf8", decode_responses=True)
+    app.include_router(mainRouter)
+    redis = aioredis.from_url(f"redis://{settings.redis_host}:{settings.redis_port}",
+                              encoding="utf8", decode_responses=True)
     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
 
 
@@ -28,7 +32,6 @@ async def shutdown():
 
 app = FastAPI(on_startup=[startup], on_shutdown=[shutdown], title="Сервис блюд")
 
-app.include_router(mainRouter)
 
 app.add_middleware(
     CORSMiddleware,
