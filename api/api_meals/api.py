@@ -51,7 +51,7 @@ async def add_meals(user_id: int,
 
 @router.get("/meals/{meals_id}", status_code=status.HTTP_200_OK,
             summary="Возвращает блюдо по id", response_model=MealsSchemas)
-@cache(expire=120)
+@cache(expire=30)
 async def get_meals_for_id(meals_id: PydanticObjectId):
     logger.info(f"Fetching meal {meals_id} from cache or database")
     try:
@@ -126,8 +126,8 @@ async def delete_meals_for_id(meals_id: PydanticObjectId):
 
 
 @router.get("/meals", status_code=status.HTTP_200_OK, summary="Возвращает все блюда",
-            response_model=Optional[List[MealsSchemas]])
-@cache(expire=120)
+            response_model=List[MealsSchemas])
+@cache(expire=30)
 async def get_all_meals():
     logger.info("Fetching all meals from cache or database")
     try:
