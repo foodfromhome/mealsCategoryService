@@ -126,7 +126,7 @@ async def delete_meals_for_id(meals_id: PydanticObjectId):
 
 
 @router.get("/meals", status_code=status.HTTP_200_OK, summary="Возвращает все блюда",
-            response_model=List[MealsSchemas])
+            response_model=Optional[List[MealsSchemas]])
 @cache(expire=120)
 async def get_all_meals():
     logger.info("Fetching all meals from cache or database")
@@ -134,7 +134,11 @@ async def get_all_meals():
 
         meals = await Meals.find().to_list()
 
-        return meals
+        if meals:
+
+            return meals
+
+        return []
 
     except HTTPException as e:
 
