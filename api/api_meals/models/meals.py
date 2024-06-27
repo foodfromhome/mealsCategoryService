@@ -2,7 +2,7 @@ from beanie import Document, PydanticObjectId
 from typing import Optional, List
 from pydantic import Field
 from datetime import datetime
-from api.admin.add_meals.models.category import MealCategory
+from api.api_meals.models.category import MealCategory
 
 
 class Meals(Document):

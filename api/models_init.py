@@ -1,1 +1,1 @@
-from api.admin.add_meals.models import Meals
+from api.api_meals.models import Meals

@@ -20,7 +20,7 @@ async def shutdown():
     pass
 
 
-app = FastAPI(on_startup=[startup], on_shutdown=[shutdown], title="Сервис страницы пользователя и повара")
+app = FastAPI(on_startup=[startup], on_shutdown=[shutdown], title="Сервис блюд")
 
 app.include_router(mainRouter)
 
