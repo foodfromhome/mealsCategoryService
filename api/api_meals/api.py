@@ -147,8 +147,7 @@ async def delete_meals_for_id(meals_id: PydanticObjectId):
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=str(e))
 
 
-@router.get("/meals", status_code=status.HTTP_200_OK, summary="Возвращает все блюда",
-            response_model=List[MealsSchemas])
+@router.get("/meals", status_code=status.HTTP_200_OK, summary="Возвращает все блюда")
 async def get_all_meals():
     try:
 
