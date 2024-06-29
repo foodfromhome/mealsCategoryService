@@ -25,7 +25,7 @@ async def add_meals(user_id: int,
                     preparation_time: int = Form(...),
                     category: MealCategory = Form(...),
                     ingredients: List[str] = Form(...),
-                    images: Optional[List[UploadFile]] = File(None)):
+                    images: List[UploadFile] = File(None)):
     try:
 
         calories, allergens = await get_info_from_edamam_api(ingredients)
