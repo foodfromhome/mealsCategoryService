@@ -6,7 +6,7 @@ from starlette.responses import JSONResponse
 from api.api_meals.models import Meals, MealCategory
 from api.api_meals.schemas import MealsSchemas
 from beanie import PydanticObjectId
-from fastapi_cache.decorator import cache
+from api.edamam_api.request import get_info_from_edamam_api
 
 
 from api.s3.main import s3_client
@@ -22,15 +22,21 @@ async def add_meals(user_id: int,
                     name: str = Form(...),
                     description: str = Form(...),
                     price: float = Form(...),
+                    preparation_time: int = Form(...),
                     category: MealCategory = Form(...),
-                    ingredient: List[str] = Form(...),
-                    images: List[UploadFile] = File(None)):
+                    ingredients: List[str] = Form(...),
+                    images: Optional[List[UploadFile]] = File(None)):
     try:
+
+        calories, allergens = await get_info_from_edamam_api(ingredients)
         meal = Meals(name=name,
                      description=description,
                      price=price,
-                     ingredient=ingredient,
+                     ingredient=ingredients,
                      category=category,
+                     calories=calories,
+                     allergens=allergens,
+                     preparation_time=preparation_time,
                      user_id=user_id)
 
         await meal.save()
@@ -144,7 +150,6 @@ async def delete_meals_for_id(meals_id: PydanticObjectId):
 @router.get("/meals", status_code=status.HTTP_200_OK, summary="Возвращает все блюда",
             response_model=List[MealsSchemas])
 async def get_all_meals():
-    logger.info("Fetching all meals from cache or database")
     try:
 
         meals = await Meals.find().to_list()

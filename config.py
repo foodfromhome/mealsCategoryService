@@ -21,5 +21,8 @@ class GlobalConfig(BaseConfig):
     redis_host = os.getenv("REDIS_SERVER")
     redis_port = os.getenv("REDIS_PORT")
 
+    edamam_app_id = os.getenv("EDAMAM_APP_ID")
+    edamam_app_key = os.getenv("EDAMAM_APP_KEY")
+
 
 settings = GlobalConfig()
