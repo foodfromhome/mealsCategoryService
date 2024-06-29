@@ -11,7 +11,8 @@ class S3Client:
                  access_key: str,
                  secret_key: str,
                  bucket_name: str,
-                 endpoint_url: str
+                 endpoint_url: str,
+                 access_id: str
                  ):
         self.config = {
             'aws_access_key_id': access_key,
@@ -21,6 +22,7 @@ class S3Client:
 
         self.bucket_name = bucket_name
         self.session = get_session()
+        self.access_id = access_id
 
     @asynccontextmanager
     async def get_client(self):
@@ -34,12 +36,13 @@ class S3Client:
 
             await s3_client.put_object(Body=file_content, Bucket=self.bucket_name, Key=file_name)
 
-            return f"https://{self.bucket_name}.s3.msk.3hcloud.com/{file_name}"
+            return f"https://{self.access_id}.storage.msk.3hcloud.com/{self.bucket_name}/{file_name}"
 
 
 s3_client = S3Client(
     access_key=settings.s3_access_key,
     secret_key=settings.s3_secret_key,
     bucket_name=settings.s3_bucket_name,
-    endpoint_url=settings.s3_endpoint_url
+    endpoint_url=settings.s3_endpoint_url,
+    access_id=settings.s3_access_id
 )

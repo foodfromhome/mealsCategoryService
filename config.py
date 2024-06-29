@@ -10,6 +10,7 @@ class GlobalConfig(BaseConfig):
     s3_secret_key = os.getenv("S3_SECRET_KEY")
     s3_bucket_name = os.getenv("S3_BUCKET_NAME")
     s3_endpoint_url = os.getenv("S3_ENDPOINT_URL")
+    s3_access_id = os.getenv("S3_ACCESS_ID")
 
     mongo_username = os.getenv("DB_USERNAME")
     mongo_password = os.getenv("DB_PASSWORD")

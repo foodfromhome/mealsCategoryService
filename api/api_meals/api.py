@@ -24,7 +24,7 @@ async def add_meals(user_id: int,
                     price: float = Form(...),
                     category: MealCategory = Form(...),
                     ingredient: List[str] = Form(...),
-                    images: Optional[List[UploadFile]] = File(None)):
+                    images: List[UploadFile] = File(None)):
     try:
         meal = Meals(name=name,
                      description=description,
@@ -40,7 +40,7 @@ async def add_meals(user_id: int,
             for image in images:
                 image.filename = image.filename.lower()
 
-                file_key = await s3_client.upload_file(image, meal_id=meal.id, type='api_meals')
+                file_key = await s3_client.upload_file(image, meal_id=meal.id, type='meals')
                 meal.images.append(file_key)
             await meal.save()
         return meal
@@ -49,9 +49,25 @@ async def add_meals(user_id: int,
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=str(e))
 
 
+@router.get("/{user_id}/meals", summary="Возвращает все meals по user_id",
+            status_code=status.HTTP_200_OK, response_model=List[Meals])
+async def get_meals_by_user(user_id: int):
+    try:
+
+        meals = await Meals.find({"user_id": user_id}).to_list()
+
+        if meals is None:
+
+            return HTTPException(status_code=status.HTTP_200_OK, detail=[])
+
+        return meals
+
+    except HTTPException as e:
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=str(e))
+
+
 @router.get("/meals/{meals_id}", status_code=status.HTTP_200_OK,
             summary="Возвращает блюдо по id", response_model=MealsSchemas)
-@cache(expire=30)
 async def get_meals_for_id(meals_id: PydanticObjectId):
     logger.info(f"Fetching meal {meals_id} from cache or database")
     try:
@@ -127,7 +143,6 @@ async def delete_meals_for_id(meals_id: PydanticObjectId):
 
 @router.get("/meals", status_code=status.HTTP_200_OK, summary="Возвращает все блюда",
             response_model=List[MealsSchemas])
-@cache(expire=30)
 async def get_all_meals():
     logger.info("Fetching all meals from cache or database")
     try:
